@@ -52,5 +52,12 @@ def GenerateRemove(board, List):
                 temp_board[i] = 'x'
                 List.append(temp_board)
                 change = True
-    if change:
+    if change:      # check this! --------------------------
         List.append(board)
+
+
+def MidgameEndgameGeneration(board):
+    if board.count('W') == 3:
+        return GenerateHopping(board=board)
+    else:
+        return GenerateMove(board)
