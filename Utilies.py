@@ -1,3 +1,5 @@
+
+
 def adjacent_locations(location):
     adjacent_locs = [
         [1,6],
@@ -71,3 +73,28 @@ def CloseMill(loc, board):
             return True
         else:
             return False
+
+def static_estimation(board):
+    numWhitePieces = board.count('W')
+    numBlackPieces = board.count('B')
+
+
+def Inverted_Board(board):
+    inverted_Board = ['x' for i in range(21)] 
+    for index, piece in enumerate(board):
+        if piece == 'W':
+            inverted_Board[index] = 'B'
+        elif piece == 'B':
+            inverted_Board[index] = 'W'
+        else:
+            inverted_Board[index] = 'x'
+
+    return inverted_Board
+
+
+def generateInvertedBoardList(board_list):
+    result = []
+    for i in board_list:
+        result.append(Inverted_Board(i))
+
+    return result
