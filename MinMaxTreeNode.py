@@ -20,12 +20,9 @@ class Node(object):
                 temp_board = deepcopy(self.board)
                 temp_board[i] = 'w'
                 if CloseMill(i, temp_board):
-                    self.nextNodes = GenerateRemove(temp_board, self.nextNodes)
+                    self.GenerateRemove()
                 else:
-                    if not self.blackTurn:
-                        self.nextNodes.append(Node(temp_board, True, self))
-                    else:
-                        self.nextNodes.append(Node(temp_board, False, self))
+                    self.nextNodes.append(Node(temp_board, not self.blackTurn, self))
 
     def GenerateRemove(self):
         change = False
@@ -34,7 +31,8 @@ class Node(object):
                 if not CloseMill(i, self.board):
                     temp_board = deepcopy(self.board)
                     temp_board[i] = 'x'
-                    self.nextNodes.append(temp_board)
+                    self.nextNodes.append(Node(temp_board, not self.blackTurn, self))
                     change = True
+                    
         if not change:      # check this! --------------------------
             self.nextNodes.append(board)
