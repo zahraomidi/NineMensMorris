@@ -1,6 +1,4 @@
 from copy import deepcopy
-# import Utilies as U
-# import Generate as G
 from Utilies import *
 from Generate import *
 
