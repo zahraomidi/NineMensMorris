@@ -37,3 +37,30 @@ class Node(object):
 
         if not change:     
             self.nextNodes.append(Node(board, not self.blackTurn, self))
+
+    def GenerateHopping(self):
+        for i in range(0,21):
+            if self.board[i]=='W':
+                for j in range(0,21):
+                    if self.board[j]=='x':
+                        temp_board = deepcopy(self.board)
+                        temp_board[i] = 'x'
+                        temp_board[j] = 'W'
+                        if CloseMill(j, temp_board):
+                            self.GenerateRemove(temp_board)
+                        else:
+                            self.nextNodes.append(Node(temp_board, not self.blackTurn, self))
+
+    def GenerateMove(self):
+        for i in range(0,21):
+            if self.board[i]=='W':
+                neighbors = adjacent_locations(i)
+                for neighbor in neighbors:
+                    if self.board[neighbor]=='x':
+                        temp_board = deepcopy(self.board)
+                        temp_board[i]='x'
+                        temp_board[neighbor]='W'
+                        if CloseMill(neighbor, temp_board):
+                            self.GenerateRemove(temp_board)
+                        else:
+                            self.nextNodes.append(Node(temp_board, not self.blackTurn, self))
