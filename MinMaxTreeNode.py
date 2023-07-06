@@ -1,18 +1,20 @@
 from copy import deepcopy
 from Utilies import *
 from Generate import *
+import math
 
 class Node(object):
-    def __init__(self, board, blackTurn=False, parent=None, nextNodes=None):
-        if nextNodes == None:
-            nextNodes = []
+    def __init__(self, board, blackTurn=False, parent=None, children=None):
+        if children == None:
+            children = []
         self.board = board
         self.blackTurn = blackTurn
         # if self.blackTurn:
         #     self.board = Inverted_Board(self.board)
         #     print("inverted board")
         self.parent = parent
-        self.nextNodes = nextNodes
+        self.children = children
+        self.static = -math.inf
                 
     def generate_opening_children(self):            #GenerateAdd function in handout
         for i in range(0,21):
@@ -23,7 +25,7 @@ class Node(object):
                     self.GenerateRemove(temp_board)
                     
                 else:
-                    self.nextNodes.append(Node(temp_board, not self.blackTurn, self))
+                    self.children.append(Node(temp_board, not self.blackTurn, self))
 
     def GenerateRemove(self, board):
         change = False
@@ -32,11 +34,11 @@ class Node(object):
                 if not CloseMill(i, board):
                     temp_board = deepcopy(board)
                     temp_board[i] = 'x'
-                    self.nextNodes.append(Node(temp_board, not self.blackTurn, self))
+                    self.children.append(Node(temp_board, not self.blackTurn, self))
                     change = True
 
         if not change:     
-            self.nextNodes.append(Node(board, not self.blackTurn, self))
+            self.children.append(Node(board, not self.blackTurn, self))
 
     def GenerateHopping(self):
         for i in range(0,21):
@@ -49,7 +51,7 @@ class Node(object):
                         if CloseMill(j, temp_board):
                             self.GenerateRemove(temp_board)
                         else:
-                            self.nextNodes.append(Node(temp_board, not self.blackTurn, self))
+                            self.children.append(Node(temp_board, not self.blackTurn, self))
 
     def GenerateMove(self):
         for i in range(0,21):
@@ -63,4 +65,18 @@ class Node(object):
                         if CloseMill(neighbor, temp_board):
                             self.GenerateRemove(temp_board)
                         else:
-                            self.nextNodes.append(Node(temp_board, not self.blackTurn, self))
+                            self.children.append(Node(temp_board, not self.blackTurn, self))
+
+    def MoveGeneratorBlack(self, phase):
+        self.board = Inverted_Board(self.board)
+        if phase=='opening':
+            self.generate_opening_children()
+        elif phase=="hopping":
+            self.GenerateHopping()
+        else:
+            self.GenerateMove()
+        
+        for node in self.children:
+            node.board = Inverted_Board(node.board)
+        
+        self.board = Inverted_Board(self.board)
