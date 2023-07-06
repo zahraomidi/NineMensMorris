@@ -1,4 +1,4 @@
-from Generate import MidgameEndgameGeneration
+# from Generate import MidgameEndgameGeneration
 
 def adjacent_locations(location):
     adjacent_locs = [
@@ -110,5 +110,13 @@ def generateInvertedBoardList(board_list):
     result = []
     for i in board_list:
         result.append(Inverted_Board(i))
+
+    return result
+
+
+def board_position_to_str(board):
+    result = ''
+    for item in board:
+        result += str(item)
 
     return result
