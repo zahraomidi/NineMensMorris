@@ -24,20 +24,19 @@ def Count_Positions(node):
 
 def MaxMin(init_node):
     if init_node.children==None or init_node.children==[]:
-        # w.write('leaf\t')
-        # w.write(str(static_estimation_opening(init_node.board)))
-        # w.write('\t')
-        return static_estimation_opening(init_node.board)
+        init_node.static_estimation_opening()
+        return init_node.static
     
     v = -math.inf
     for child in init_node.children:
         v = max(v, MinMax(child)) 
 
+    init_node.static = v
     return v
 
 def MinMax(init_node):
     if init_node.children==None or init_node.children==[]:
-        init_node.static = static_estimation_opening(init_node.board)
+        init_node.static_estimation_opening()
         return init_node.static
     
     v = math.inf
