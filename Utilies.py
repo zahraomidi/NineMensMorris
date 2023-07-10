@@ -1,4 +1,3 @@
-# from Generate import MidgameEndgameGeneration
 
 def adjacent_locations(location):
     adjacent_locs = [
@@ -74,24 +73,6 @@ def CloseMill(loc, board):
         else:
             return False
 
-
-def static_estimation(board):
-    numWhitePieces = board.count('W')
-    numBlackPieces = board.count('B')
-
-    board_list = MidgameEndgameGeneration(board)
-    numBlackMoves = len(board_list)
-
-    if numBlackPieces <= 2: return 10000
-    elif numWhitePieces <= 2: return -10000
-    elif numBlackMoves == 0: return 10000
-    else: return (1000*(numWhitePieces - numBlackPieces) - numBlackMoves)
-
-def static_estimation_opening(board):
-    numWhitePieces = board.count('W')
-    numBlackPieces = board.count('B')
-
-    return (numWhitePieces - numBlackPieces)
 
 def Inverted_Board(board):
     inverted_Board = ['x' for i in range(21)] 
