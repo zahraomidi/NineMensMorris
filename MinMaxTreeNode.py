@@ -1,6 +1,5 @@
 from copy import deepcopy
-from Utilies import *
-from Generate import *
+from Utilies import CloseMill, adjacent_locations, Inverted_Board
 import math
 
 class Node(object):
@@ -9,9 +8,6 @@ class Node(object):
             children = []
         self.board = board
         self.blackTurn = blackTurn
-        # if self.blackTurn:
-        #     self.board = Inverted_Board(self.board)
-        #     print("inverted board")
         self.parent = parent
         self.children = children
         self.static = -math.inf
@@ -58,7 +54,8 @@ class Node(object):
             if self.board[i]=='W':
                 neighbors = adjacent_locations(i)
                 for neighbor in neighbors:
-                    if self.board[neighbor]=='x':
+                    if self.board[neighbor] == 'x':
+                        
                         temp_board = deepcopy(self.board)
                         temp_board[i]='x'
                         temp_board[neighbor]='W'
@@ -67,16 +64,39 @@ class Node(object):
                         else:
                             self.children.append(Node(temp_board, not self.blackTurn, self))
 
+    
+    def GenerateMovesMidgameEndgame(self):
+        if self.board.count('W') == 3:
+            self.GenerateHopping()
+        else:
+            self.GenerateMove()
+    
     def MoveGeneratorBlack(self, phase):
         self.board = Inverted_Board(self.board)
         if phase=='opening':
             self.generate_opening_children()
-        elif phase=="hopping":
-            self.GenerateHopping()
         else:
-            self.GenerateMove()
+            self.GenerateMovesMidgameEndgame()
         
         for node in self.children:
             node.board = Inverted_Board(node.board)
         
         self.board = Inverted_Board(self.board)
+
+    def static_estimation(self):
+        numWhitePieces = self.board.count('W')
+        numBlackPieces = self.board.count('B')
+
+        temp_borad = Node(self.board)
+        temp_borad.GenerateMovesMidgameEndgame()
+        numBlackMoves = len(temp_borad.children)
+
+        if numBlackPieces <= 2: self.static = 10000
+        elif numWhitePieces <= 2: self.static = -10000
+        elif numBlackMoves == 0: self.static = 10000
+        else: self.static = (1000*(numWhitePieces - numBlackPieces) - numBlackMoves)
+
+    def static_estimation_opening(self):
+        numWhitePieces = self.board.count('W')
+        numBlackPieces = self.board.count('B')
+        self.static = numWhitePieces - numBlackPieces
