@@ -1,5 +1,5 @@
 from copy import deepcopy
-from Utilies import CloseMill, adjacent_locations, Inverted_Board
+from Utilies import *
 import math
 
 class Node(object):
@@ -87,9 +87,10 @@ class Node(object):
         numWhitePieces = self.board.count('W')
         numBlackPieces = self.board.count('B')
 
-        temp_borad = Node(self.board)
-        temp_borad.GenerateMovesMidgameEndgame()
-        numBlackMoves = len(temp_borad.children)
+        temp_board = Node(self.board)
+        # temp_board.GenerateMovesMidgameEndgame()
+        temp_board.MoveGeneratorBlack()
+        numBlackMoves = len(temp_board.children)
 
         if numBlackPieces <= 2: self.static = 10000
         elif numWhitePieces <= 2: self.static = -10000
@@ -100,3 +101,53 @@ class Node(object):
         numWhitePieces = self.board.count('W')
         numBlackPieces = self.board.count('B')
         self.static = numWhitePieces - numBlackPieces
+
+    def static_estimation_black(self):
+        numWhitePieces = self.board.count('W')
+        numBlackPieces = self.board.count('B')
+
+        temp_board = Node(self.board)
+        temp_board.GenerateMovesMidgameEndgame()
+        numWhiteMoves = len(temp_board.children)
+
+        if numBlackPieces <= 2: self.static = -10000
+        elif numWhitePieces <= 2: self.static = 10000
+        elif numWhiteMoves == 0: self.static = 10000
+        else: self.static = (1000*(numBlackPieces - numWhitePieces) - numWhiteMoves)
+
+    def static_estimation_opening_black(self):
+        numWhitePieces = self.board.count('W')
+        numBlackPieces = self.board.count('B')
+        self.static = numBlackPieces - numWhitePieces
+
+
+    def static_estimation_opening_improved(self):
+        numWhitePieces = self.board.count('W')
+        numBlackPieces = self.board.count('B')
+
+        diffInPieces = numWhitePieces - numBlackPieces
+        diffIn2pieces = count_2pieces(self.board, 'W') - count_2pieces(self.board, 'B')
+        diffInMills = count_mills(self.board, 'W') - count_mills(self.board, 'B')
+        diffInNumberOfClosedPieces = countClosedPieces(self.board, 'B') - countClosedPieces(self.board, 'W')
+
+        static = 10 * diffInPieces + \
+                    15 * diffIn2pieces + \
+                    20 * diffInMills + \
+                    5 * diffInNumberOfClosedPieces
+        self.static = static 
+
+    def static_estimation_improved(self):
+        numWhitePieces = self.board.count('W')
+        numBlackPieces = self.board.count('B')
+
+        diffInPieces = numWhitePieces - numBlackPieces
+        diffIn2pieces = count_2pieces(self.board, 'W') - count_2pieces(self.board, 'B')
+        diffInMills = count_mills(self.board, 'W') - count_mills(self.board, 'B')
+        diffInNumberOfClosedPieces = countClosedPieces(self.board, 'B') - countClosedPieces(self.board, 'W')
+
+        static = 12 * diffInPieces + \
+                    15 * diffIn2pieces + \
+                    40 * diffInMills + \
+                    15 * diffInNumberOfClosedPieces + \
+                    2000 * winningConfig(self.board)
+        self.static = static 
