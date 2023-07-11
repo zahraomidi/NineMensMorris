@@ -1,3 +1,56 @@
+MILLS = ((0, 6, 18), (1, 11, 20), (2, 7, 15), (3, 10, 17), 
+         (4, 8, 12), (5, 9, 14), (6, 7, 8), (9, 10, 11),
+         (15, 16, 17), (13, 16, 19), (18, 19, 20))
+
+def count_2pieces(board, player):
+    count = 0
+    for trio in MILLS:
+        if board[trio[0]] == board[trio[1]] == player and board[trio[2]] == 'x':
+            count += 1
+        if board[trio[0]] == board[trio[2]] == player and board[trio[1]] == 'x':
+            count += 1
+        if board[trio[2]] == board[trio[1]] == player and board[trio[0]] == 'x':
+            count += 1
+    
+    return count
+
+def count_mills(board, player):
+    count = 0
+    for trio in MILLS:
+        if board[trio[0]] == board[trio[1]] == board[trio[2]] == player:
+            count += 1
+        if board[trio[0]] == board[trio[2]] == board[trio[1]] == player:
+            count += 1
+        if board[trio[2]] == board[trio[1]] == board[trio[0]] == player:
+            count += 1
+    
+    return count
+
+def countClosedPieces(board, player):
+    count = 0
+    for loc in range(0, 21):
+        if board[loc] == player:
+            temp = True
+            adjacents = adjacent_locations(loc)
+            for adj in adjacents:
+                if board[adj] == 'x':
+                    temp = False
+            if temp: count += 1
+    
+    return count
+
+def allPlayerPiecesClosed(board, player):
+    if board.count(player) == countClosedPieces(board, player):
+        return True
+    return False
+
+def winningConfig(board):
+    if allPlayerPiecesClosed(board, 'W') or board.count('W') < 3:
+        return 1
+    if allPlayerPiecesClosed(board, 'B') or board.count('B') < 3:
+        return -1
+    return 0
+
 
 def adjacent_locations(location):
     adjacent_locs = [
