@@ -2,6 +2,7 @@ from Utilies import *
 from MinMaxTreeNode import Node
 import math
 
+global numberOfPositions 
 
 def traverse_tree(init_node, node_depth, tree_depth):
     if node_depth < tree_depth:
@@ -12,17 +13,9 @@ def traverse_tree(init_node, node_depth, tree_depth):
         for child in init_node.children:
             traverse_tree(child, node_depth+1, tree_depth)
 
-def Count_Positions(node):
-    if node.children == None or node.children == []:
-        return 1
-    
-    count = 0
-    for child in node.children:
-        count += Count_Positions(child)
-    
-    return count
-
 def MaxMin(init_node):
+    global numberOfPositions
+    numberOfPositions += 1
     if init_node.children==None or init_node.children==[]:
         init_node.static_estimation_opening()
         return init_node.static
@@ -31,12 +24,13 @@ def MaxMin(init_node):
     for child in init_node.children:
         v = max(v, MinMax(child)) 
 
-    init_node.static = v
     return v
 
 def MinMax(init_node):
+    global numberOfPositions
+    numberOfPositions += 1
     if init_node.children==None or init_node.children==[]:
-        init_node.static_estimation_opening()
+        init_node.static_estimation_opening(init_node.board)
         return init_node.static
     
     v = math.inf
@@ -45,6 +39,7 @@ def MinMax(init_node):
 
     init_node.static = v
     return v
+
 
 if __name__ == '__main__':
     # input_file = input("Please enter the input file name:\n")
@@ -59,12 +54,14 @@ if __name__ == '__main__':
     board = f.read()
     board = [item for item in board]
     temp_board = Node(board=board)
+
+    
+    numberOfPositions = 0
     
     traverse_tree(temp_board, 0, depth)
 
-    count_pos = Count_Positions(temp_board)
-
     output_static = MaxMin(temp_board)
+    print(numberOfPositions)
 
     Best_Move = temp_board
     Best_static = -math.inf
@@ -79,7 +76,8 @@ if __name__ == '__main__':
     w.write(str(board_position_to_str(Best_Move.board)) + '\n')
 
     w.write('Positions evaluated by static estimation:\t')
-    w.write(str(count_pos)+'\n')
+    w.write(str(numberOfPositions)+'\n')
+
 
     w.write('MINIMAX estimate:\t')
     w.write(str(Best_Move.static))
