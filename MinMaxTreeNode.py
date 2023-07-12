@@ -89,7 +89,7 @@ class Node(object):
 
         temp_board = Node(self.board)
         # temp_board.GenerateMovesMidgameEndgame()
-        temp_board.MoveGeneratorBlack()
+        temp_board.MoveGeneratorBlack('midend')
         numBlackMoves = len(temp_board.children)
 
         if numBlackPieces <= 2: self.static = 10000
@@ -151,3 +151,25 @@ class Node(object):
                     15 * diffInNumberOfClosedPieces + \
                     2000 * winningConfig(self.board)
         self.static = static 
+
+    def PrintBoard(self):
+        board = self.board
+        print(board_position_to_str(board))
+        print('\n'
+	      '                     {}--------------{}---------------{} \n'
+		  '                     |               |                |\n'
+		  '                     |    {}---------{}----------{}   |\n'
+		  '                     |    |          |           |    |\n'
+		  '                     |    |    {}----{}-----{}   |    |\n'
+		  '                     |    |    |            |    |    |\n'
+		  '                     {}---{}---{}           {}---{}---{}\n'
+		  '                     |    |    |            |    |    |\n'
+		  '                     |    |    {}-----------{}   |    |\n'
+		  '                     |    |                      |    |\n'
+		  '                     |    {}---------------------{}   |\n'
+		  '                     |                                |\n'
+		  '                     {}-------------------------------{}\n'.format(
+		ch(board[18]),ch(board[19]),ch(board[20]),ch(board[15]),ch(board[16]),ch(board[17]),ch(board[12]),ch(board[13]),
+		ch(board[14]),ch(board[6]),ch(board[7]),ch(board[8]),ch(board[9]),ch(board[10]),ch(board[11]),ch(board[4]),
+		ch(board[5]),ch(board[2]),ch(board[3]),ch(board[0]),ch(board[1])))
+        print()
