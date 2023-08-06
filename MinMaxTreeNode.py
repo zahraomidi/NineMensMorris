@@ -10,7 +10,7 @@ class Node(object):
         self.blackTurn = blackTurn
         self.parent = parent
         self.children = children
-        self.static = -math.inf
+        self.static = None
                 
     def generate_opening_children(self):            #GenerateAdd function in handout
         for i in range(0,21):
@@ -88,7 +88,6 @@ class Node(object):
         numBlackPieces = self.board.count('B')
 
         temp_board = Node(self.board)
-        # temp_board.GenerateMovesMidgameEndgame()
         temp_board.MoveGeneratorBlack('midend')
         numBlackMoves = len(temp_board.children)
 
