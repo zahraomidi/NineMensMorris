@@ -154,3 +154,8 @@ def board_position_to_str(board):
         result += str(item)
 
     return result
+
+def ch(char):
+	if len(char) == 1:
+		return char + ' '
+	return char
