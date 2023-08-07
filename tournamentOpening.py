@@ -5,14 +5,22 @@ import time
 
 global position_num
 
-def traverse_tree(init_node, node_depth, tree_depth):
-    if node_depth < tree_depth:
-        if init_node.blackTurn:
-            init_node.MoveGeneratorBlack('opening')
-        else: 
-            init_node.generate_opening_children()
+w2 = open('ABtouropening_children.txt', 'w')
+
+def write_children(node):
+    w2.write(board_position_to_str(node.board))
+    w2.write('\t')
+    if not node.static == None:
+        w2.write(str(node.static))
+    w2.write('\n')
+    for child in node.children:
+        write_children(child)
+
+def traverse_tree(init_node, depth):
+    init_node.generate_next_positions('opening')
+    if (time.time() - start)<15 and depth<20:
         for child in init_node.children:
-            traverse_tree(child, node_depth+1, tree_depth)
+            traverse_tree(child, depth+1)
 
 
 def MaxMin(init_node, alpha, betha):
@@ -21,10 +29,14 @@ def MaxMin(init_node, alpha, betha):
     position_num += 1
 
     if init_node.children == None or init_node.children == []:
+        # if Midgame_phase:
+        #     init_node.static_estimation_improved()
+        # else:
         init_node.static_estimation_opening_improved()
         return init_node.static
     
-    v = -math.inf
+    # v = -math.inf
+    v = -200000
     for child in init_node.children:
         v = max(v, MinMax(child, alpha, betha)) 
         if v >= betha:
@@ -42,10 +54,15 @@ def MinMax(init_node, alpha, betha):
     position_num += 1
 
     if init_node.children == None or init_node.children == []:
+        # print("leaf")
+        # if Midgame_phase:
+        #     init_node.static_estimation_improved()
+        # else:
         init_node.static_estimation_opening_improved()
         return init_node.static
     
-    v = math.inf
+    # v = math.inf
+    v = 200000
     for child in init_node.children:
         v = min(v, MaxMin(child, alpha, betha))
         if v <= alpha:
@@ -58,27 +75,23 @@ def MinMax(init_node, alpha, betha):
     return v
 
 if __name__ == '__main__':
-
-    input_file = 'b1.txt'
-    output_file = 'AB_tour_open.txt'
-    depth = 7
-
-    f = open(input_file, "r")
-    board = f.read()
+    
+    board = 'BBBBxxxWxBWWxxxWBWWBW'
+    board = 'xxxxxxxxxxxxxWxxxxxxx'
     board = [item for item in board]
     temp_board = Node(board=board)
+    temp_board.PrintBoard()
 
     position_num = 0
     
     start = time.time()
-    traverse_tree(temp_board, 0, depth)
-
+    traverse_tree(temp_board, 0)
     
     output_static = MaxMin(temp_board, -math.inf, math.inf)
     end = time.time()
 
     print(str((end-start)))
-    # write_children(temp_board)
+    write_children(temp_board)
 
     Best_Move = temp_board
     Best_static = -math.inf
@@ -88,13 +101,15 @@ if __name__ == '__main__':
             Best_Move = child
 
     Best_Move.PrintBoard()
-    w = open(output_file, 'w')
+    # print(str(board_position_to_str(Best_Move.board)))
 
-    w.write('Board Position:\t')
-    w.write(str(board_position_to_str(Best_Move.board)) + '\n')
+    # w = open(output_file, 'w')
 
-    w.write('Positions evaluated by static estimation:\t')
-    w.write(str(position_num)+'\n')
+    # w.write('Board Position:\t')
+    # w.write(str(board_position_to_str(Best_Move.board)) + '\n')
 
-    w.write('MINIMAX estimate:\t')
-    w.write(str(Best_Move.static))
+    # w.write('Positions evaluated by static estimation:\t')
+    # w.write(str(position_num)+'\n')
+
+    # w.write('MINIMAX estimate:\t')
+    # w.write(str(Best_Move.static))
