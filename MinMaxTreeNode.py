@@ -11,6 +11,7 @@ class Node(object):
         self.parent = parent
         self.children = children
         self.static = None
+        self.MidGame = False
                 
     def GenerateMovesOpening(self):           
         for i in range(0,21):
@@ -71,17 +72,17 @@ class Node(object):
         else:
             self.GenerateMove()
     
-    def MoveGeneratorBlack(self, phase):
-        self.board = Inverted_Board(self.board)
-        if phase=='opening':
-            self.GenerateMovesOpening()
-        else:
-            self.GenerateMovesMidgameEndgame()
+    # def MoveGeneratorBlack(self, phase):
+    #     self.board = Inverted_Board(self.board)
+    #     if phase=='opening':
+    #         self.GenerateMovesOpening()
+    #     else:
+    #         self.GenerateMovesMidgameEndgame()
         
-        for node in self.children:
-            node.board = Inverted_Board(node.board)
+    #     for node in self.children:
+    #         node.board = Inverted_Board(node.board)
         
-        self.board = Inverted_Board(self.board)
+    #     self.board = Inverted_Board(self.board)
 
     def generate_next_positions(self, phase):
         Midgame_phase = False
@@ -91,14 +92,16 @@ class Node(object):
 
         playercount = self.board.count('W')
         if playercount >= 8:
-            Midgame_phase = True
+            self.MidGame = True
 
-        if Midgame_phase or phase == 'midend':
+        if self.MidGame or phase == 'midend':
             self.GenerateMovesMidgameEndgame()
         else: 
            self.GenerateMovesOpening()
 
         if self.blackTurn:
+            for node in self.children:
+                node.board = Inverted_Board(node.board)
             self.board = Inverted_Board(self.board)
 
 
@@ -163,16 +166,22 @@ class Node(object):
         diffInMills = count_mills(self.board, 'W') - count_mills(self.board, 'B')
         diffInNumberOfClosedPieces = countClosedPieces(self.board, 'B') - countClosedPieces(self.board, 'W')
 
-        static = 12 * diffInPieces + \
-                    15 * diffIn2pieces + \
-                    40 * diffInMills + \
-                    15 * diffInNumberOfClosedPieces + \
-                    2000 * winningConfig(self.board)
+        if self.MidGame:
+            static = 12 * diffInPieces + \
+                        30 * diffIn2pieces + \
+                        40 * diffInMills + \
+                        15 * diffInNumberOfClosedPieces + \
+                        2000 * winningConfig(self.board)
+        else:
+            static = 10 * diffInPieces + \
+                    35 * diffIn2pieces + \
+                    20 * diffInMills + \
+                    10 * diffInNumberOfClosedPieces
         self.static = static 
 
     def PrintBoard(self):
         board = self.board
-        print(board_position_to_str(board))
+        
         print('\n'
 	      '                     {}--------------{}---------------{} \n'
 		  '                     |               |                |\n'
@@ -191,3 +200,4 @@ class Node(object):
 		ch(board[14]),ch(board[6]),ch(board[7]),ch(board[8]),ch(board[9]),ch(board[10]),ch(board[11]),ch(board[4]),
 		ch(board[5]),ch(board[2]),ch(board[3]),ch(board[0]),ch(board[1])))
         print()
+        print(board_position_to_str(board))
