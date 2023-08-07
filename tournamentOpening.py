@@ -7,18 +7,21 @@ global position_num
 
 w2 = open('ABtouropening_children.txt', 'w')
 
-def write_children(node):
+def write_children(node, depth):
+    w2.write(str(depth))
+    w2.write('  ')
     w2.write(board_position_to_str(node.board))
     w2.write('\t')
     if not node.static == None:
         w2.write(str(node.static))
     w2.write('\n')
     for child in node.children:
-        write_children(child)
+        write_children(child, depth+1)
 
 def traverse_tree(init_node, depth):
     init_node.generate_next_positions('opening')
-    if (time.time() - start)<15 and depth<20:
+    # print(time.time() - start)
+    if (time.time() - start)<19 and depth<39:
         for child in init_node.children:
             traverse_tree(child, depth+1)
 
@@ -29,10 +32,7 @@ def MaxMin(init_node, alpha, betha):
     position_num += 1
 
     if init_node.children == None or init_node.children == []:
-        # if Midgame_phase:
-        #     init_node.static_estimation_improved()
-        # else:
-        init_node.static_estimation_opening_improved()
+        init_node.static_estimation_improved()
         return init_node.static
     
     # v = -math.inf
@@ -54,11 +54,7 @@ def MinMax(init_node, alpha, betha):
     position_num += 1
 
     if init_node.children == None or init_node.children == []:
-        # print("leaf")
-        # if Midgame_phase:
-        #     init_node.static_estimation_improved()
-        # else:
-        init_node.static_estimation_opening_improved()
+        init_node.static_estimation_improved()
         return init_node.static
     
     # v = math.inf
@@ -77,9 +73,10 @@ def MinMax(init_node, alpha, betha):
 if __name__ == '__main__':
     
     board = 'BBBBxxxWxBWWxxxWBWWBW'
-    board = 'xxxxxxxxxxxxxWxxxxxxx'
+    board = 'xxxxxxxxxxxxxBxxxxxxx'
     board = [item for item in board]
-    temp_board = Node(board=board)
+    # temp_board = Node(board=board)
+    temp_board = Node(board=board, blackTurn=True)
     temp_board.PrintBoard()
 
     position_num = 0
@@ -91,11 +88,12 @@ if __name__ == '__main__':
     end = time.time()
 
     print(str((end-start)))
-    write_children(temp_board)
+    write_children(temp_board, 0)
 
     Best_Move = temp_board
     Best_static = -math.inf
     for child in temp_board.children:
+        print(child.static)
         if child.static > Best_static:
             Best_static = child.static
             Best_Move = child
