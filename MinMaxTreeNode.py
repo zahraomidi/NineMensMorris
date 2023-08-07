@@ -12,7 +12,7 @@ class Node(object):
         self.children = children
         self.static = None
                 
-    def generate_opening_children(self):            #GenerateAdd function in handout
+    def GenerateMovesOpening(self):           
         for i in range(0,21):
             if self.board[i] == 'x':
                 temp_board = deepcopy(self.board)
@@ -74,7 +74,7 @@ class Node(object):
     def MoveGeneratorBlack(self, phase):
         self.board = Inverted_Board(self.board)
         if phase=='opening':
-            self.generate_opening_children()
+            self.GenerateMovesOpening()
         else:
             self.GenerateMovesMidgameEndgame()
         
@@ -82,6 +82,25 @@ class Node(object):
             node.board = Inverted_Board(node.board)
         
         self.board = Inverted_Board(self.board)
+
+    def generate_next_positions(self, phase):
+        Midgame_phase = False
+
+        if self.blackTurn:
+            self.board = Inverted_Board(self.board)
+
+        playercount = self.board.count('W')
+        if playercount >= 8:
+            Midgame_phase = True
+
+        if Midgame_phase or phase == 'midend':
+            self.GenerateMovesMidgameEndgame()
+        else: 
+           self.GenerateMovesOpening()
+
+        if self.blackTurn:
+            self.board = Inverted_Board(self.board)
+
 
     def static_estimation(self):
         numWhitePieces = self.board.count('W')
@@ -130,9 +149,9 @@ class Node(object):
         diffInNumberOfClosedPieces = countClosedPieces(self.board, 'B') - countClosedPieces(self.board, 'W')
 
         static = 10 * diffInPieces + \
-                    15 * diffIn2pieces + \
+                    25 * diffIn2pieces + \
                     20 * diffInMills + \
-                    5 * diffInNumberOfClosedPieces
+                    10 * diffInNumberOfClosedPieces
         self.static = static 
 
     def static_estimation_improved(self):
