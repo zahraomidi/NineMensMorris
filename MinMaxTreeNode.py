@@ -3,7 +3,7 @@ from Utilies import *
 import math
 
 class Node(object):
-    def __init__(self, board, blackTurn=False, parent=None, children=None):
+    def __init__(self, board, blackTurn=False, parent=None, children=None, MidGame=False):
         if children == None:
             children = []
         self.board = board
@@ -11,7 +11,7 @@ class Node(object):
         self.parent = parent
         self.children = children
         self.static = None
-        self.MidGame = False
+        self.MidGame = MidGame
                 
     def GenerateMovesOpening(self):           
         for i in range(0,21):
@@ -31,11 +31,11 @@ class Node(object):
                 if not CloseMill(i, board):
                     temp_board = deepcopy(board)
                     temp_board[i] = 'x'
-                    self.children.append(Node(temp_board, not self.blackTurn, self))
+                    self.children.append(Node(temp_board, not self.blackTurn, self, MidGame=True))
                     change = True
 
         if not change:     
-            self.children.append(Node(board, not self.blackTurn, self))
+            self.children.append(Node(board, not self.blackTurn, self, MidGame=True))
 
     def GenerateHopping(self):
         for i in range(0,21):
@@ -48,7 +48,7 @@ class Node(object):
                         if CloseMill(j, temp_board):
                             self.GenerateRemove(temp_board)
                         else:
-                            self.children.append(Node(temp_board, not self.blackTurn, self))
+                            self.children.append(Node(temp_board, not self.blackTurn, self, MidGame=True))
 
     def GenerateMove(self):
         for i in range(0,21):
@@ -63,7 +63,7 @@ class Node(object):
                         if CloseMill(neighbor, temp_board):
                             self.GenerateRemove(temp_board)
                         else:
-                            self.children.append(Node(temp_board, not self.blackTurn, self))
+                            self.children.append(Node(temp_board, not self.blackTurn, self, MidGame=True))
 
     
     def GenerateMovesMidgameEndgame(self):
@@ -85,7 +85,6 @@ class Node(object):
     #     self.board = Inverted_Board(self.board)
 
     def generate_next_positions(self, phase):
-        Midgame_phase = False
 
         if self.blackTurn:
             self.board = Inverted_Board(self.board)
@@ -169,13 +168,13 @@ class Node(object):
         if self.MidGame:
             static = 12 * diffInPieces + \
                         30 * diffIn2pieces + \
-                        40 * diffInMills + \
+                        50 * diffInMills + \
                         15 * diffInNumberOfClosedPieces + \
-                        2000 * winningConfig(self.board)
+                        20000 * winningConfig(self.board)
         else:
             static = 10 * diffInPieces + \
-                    35 * diffIn2pieces + \
-                    20 * diffInMills + \
+                    30 * diffIn2pieces + \
+                    50 * diffInMills + \
                     10 * diffInNumberOfClosedPieces
         self.static = static 
 
