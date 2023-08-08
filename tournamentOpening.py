@@ -18,12 +18,11 @@ def write_children(node, depth):
     for child in node.children:
         write_children(child, depth+1)
 
-def traverse_tree(init_node, depth):
+def traverse_tree(init_node, depth, max_depth):
     init_node.generate_next_positions('opening')
-    # print(time.time() - start)
-    if (time.time() - start)<19 and depth<39:
+    if (time.time() - start)<19 and depth<max_depth:
         for child in init_node.children:
-            traverse_tree(child, depth+1)
+            traverse_tree(child, depth+1, max_depth)
 
 
 def MaxMin(init_node, alpha, betha):
@@ -75,6 +74,8 @@ if __name__ == '__main__':
     board = 'BBBBxxxWxBWWxxxWBWWBW'
     board = 'xxxxxxxxxxxxxBxxxxxxx'
     board = [item for item in board]
+
+    max_depth = 40
     # temp_board = Node(board=board)
     temp_board = Node(board=board, blackTurn=True)
     temp_board.PrintBoard()
@@ -82,7 +83,7 @@ if __name__ == '__main__':
     position_num = 0
     
     start = time.time()
-    traverse_tree(temp_board, 0)
+    traverse_tree(temp_board, 0, max_depth)
     
     output_static = MaxMin(temp_board, -math.inf, math.inf)
     end = time.time()
@@ -93,7 +94,7 @@ if __name__ == '__main__':
     Best_Move = temp_board
     Best_static = -math.inf
     for child in temp_board.children:
-        print(child.static)
+        # print(child.static)
         if child.static > Best_static:
             Best_static = child.static
             Best_Move = child
